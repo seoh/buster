@@ -34,6 +34,7 @@ def main():
         static_path = arguments['--dir']
     else:
         static_path = os.path.join(os.getcwd(), 'static')
+    static_path = os.path.expanduser(static_path)
 
     if arguments['generate']:
         command = ("wget "
@@ -50,7 +51,7 @@ def main():
         # remove query string since Ghost 0.4
         file_regex = re.compile(r".*?([@?].*)")
         html_regex = re.compile(r".*?(\.html)")
-        static_path = os.path.expanduser(static_path)
+
         print "Checking path: ", static_path
         for root, dirs, filenames in os.walk(static_path):
             for filename in filenames:
@@ -62,6 +63,7 @@ def main():
                         file_contents = file_contents.replace("%hurl%", arguments['--domain']) # This allows us to use %hurl% (short for home url, and it's fun to type) inline and have http://127.0.0.1:2368 output in the html
                         f.seek(0)
                         f.write(file_contents)
+                        f.truncate()
                         f.close()
                 if file_regex.match(filename):
                     newname = re.sub(r'[@?].*', '', filename)
