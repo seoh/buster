@@ -48,8 +48,9 @@ def main():
         os.system(command)
 
         # remove query string since Ghost 0.4
-        file_regex = re.compile(r".*?(@.*)")
+        file_regex = re.compile(r".*?([@?].*)")
         html_regex = re.compile(r".*?(\.html)")
+        static_path = os.path.expanduser(static_path)
         print "Checking path: ", static_path
         for root, dirs, filenames in os.walk(static_path):
             for filename in filenames:
@@ -63,7 +64,7 @@ def main():
                         f.write(file_contents)
                         f.close()
                 if file_regex.match(filename):
-                    newname = re.sub(r'@.*', '', filename)
+                    newname = re.sub(r'[@?].*', '', filename)
                     print "Rename", filename, "=>", newname
                     os.rename(os.path.join(root, filename), os.path.join(root, newname))
 
