@@ -2,7 +2,7 @@
 
 Usage:
   buster.py setup [--gh-repo=<repo-url>] [--dir=<path>]
-  buster.py generate [--domain=<local-address>] [--dir=<path>]
+  buster.py generate [--domain=<local-address>] [--dir=<path> --base=<remote-address>]
   buster.py preview [--dir=<path>]
   buster.py deploy [--dir=<path>]
   buster.py add-domain <domain-name> [--dir=<path>]
@@ -13,6 +13,7 @@ Options:
   -h --help                 Show this screen.
   --version                 Show version.
   --dir=<path>              Absolute path of directory to store static pages.
+  --base=<remote-address>   Remote Address to be published static pages.
   --domain=<local-address>  Address of local ghost installation [default: local.tryghost.org].
   --gh-repo=<repo-url>      URL of your gh-pages repository.
 """
@@ -35,6 +36,11 @@ def main():
     else:
         static_path = os.path.join(os.getcwd(), 'static')
     static_path = os.path.expanduser(static_path)
+
+    if arguments['--base'] is not None:
+        base_url = arguments['--base']
+    else:
+        base_url = ''
 
     if arguments['generate']:
         command = ("wget "
@@ -59,7 +65,7 @@ def main():
                     path = ("{0}").format(os.path.join(root, filename).replace("\\", "/"))
                     with open(path, "r+") as f:
                         file_contents = f.read()
-                        file_contents = file_contents.replace(arguments['--domain'], "")
+                        file_contents = file_contents.replace(arguments['--domain'], base_url)
                         file_contents = file_contents.replace("%hurl%", arguments['--domain']) # This allows us to use %hurl% (short for home url, and it's fun to type) inline and have http://127.0.0.1:2368 output in the html
                         f.seek(0)
                         f.write(file_contents)
