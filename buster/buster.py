@@ -50,6 +50,7 @@ def main():
                    "--no-parent "             # don't go to parent level
                    "--directory-prefix {1} "  # download contents to static/ folder
                    "--no-host-directories "   # don't create domain named folder
+                   "--content-disposition "
                    "--restrict-file-names=unix "
                    "{0}").format(arguments['--domain'], static_path)
         os.system(command)
@@ -67,6 +68,10 @@ def main():
                         file_contents = f.read()
                         file_contents = file_contents.replace(arguments['--domain'], base_url)
                         file_contents = file_contents.replace("%hurl%", arguments['--domain']) # This allows us to use %hurl% (short for home url, and it's fun to type) inline and have http://127.0.0.1:2368 output in the html
+                        file_contents = re.sub(
+                          r'href="([^"]*)/index.html"', 
+                          r'href="\1"', 
+                          file_contents)
                         f.seek(0)
                         f.write(file_contents)
                         f.truncate()
